@@ -17,13 +17,6 @@ public class UsersModel {
         this.jdbcClient = jdbcClient;
     }
 
-    /*public Optional<users> findByName(String name){
-        return Optional.ofNullable(jdbcClient.sql("SELECT * FROM users WHERE name = :name")
-                         .param("name", name)
-                         .query(users.class)
-                         .single());
-    }*/
-
     public Optional<users> findByName(String name) {
         Optional<users> user;
         
@@ -34,7 +27,7 @@ public class UsersModel {
                           .single());
             
         } catch (DataAccessException ex) {
-           user = null; // Se não encontrar no banco de dados, retorna
+           user = null; // Se não encontrar no banco de dados, retorna null
         }
 
         return user;
