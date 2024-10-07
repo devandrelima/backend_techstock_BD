@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 import com.backend.techstock.repository.brands;
-import com.backend.techstock.repository.users;
+import com.backend.techstock.repository.changeName;
 
 public class BrandsModel { 
     private final JdbcClient jdbcClient;
@@ -25,4 +25,23 @@ public class BrandsModel {
                          .single();
     }
 
+    public Integer create(brands brand){
+        return jdbcClient.sql("INSERT INTO brands(name) VALUES (:name)")
+                         .param("name", brand.name())
+                         .update();
+    }
+
+    
+    public Integer brandNameUpdate(changeName newUserName){
+        return jdbcClient.sql("UPDATE brands SET name = :newName WHERE name = :oldName")
+                         .param("newName", newUserName.newName())
+                         .param("oldName", newUserName.oldName())
+                         .update();
+    }
+
+    public Integer deleteBrand(brands brand){
+        return jdbcClient.sql("DELETE FROM brands WHERE name = :name")
+                         .param("name", brand.name())
+                         .update();
+    }
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import com.backend.techstock.repository.newusername;
+import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.users;
 
 @Repository
@@ -34,7 +34,7 @@ public class UsersModel {
                          .update();
     }
 
-    public Integer nameUpdate(newusername newUserName){
+    public Integer nameUpdate(changeName newUserName){
         return jdbcClient.sql("UPDATE users SET name = :newName WHERE name = :oldName")
                          .param("newName", newUserName.newName())
                          .param("oldName", newUserName.oldName())

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.techstock.model.UsersModel;
 import com.backend.techstock.repository.messageResponse;
-import com.backend.techstock.repository.newusername;
+import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.users;
 
 @RestController
@@ -84,7 +84,7 @@ public class UsersController {
 
     @PutMapping("/newusername")
     @Transactional                                                                      
-    public ResponseEntity updateUserName(@RequestBody newusername newUserName) {
+    public ResponseEntity updateUserName(@RequestBody changeName newUserName) {
         UsersModel usersModel = new UsersModel(jdbcClient);
         messageResponse message;
           
