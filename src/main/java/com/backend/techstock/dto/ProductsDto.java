@@ -8,4 +8,4 @@ public record ProductsDto(int id,
                          double price,
                          int quantity, 
                          String thumbnailPathname, 
-                         brands idBrand) {} 
+                         brands brand) {} 

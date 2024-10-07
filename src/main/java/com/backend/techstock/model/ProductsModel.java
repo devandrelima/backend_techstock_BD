@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import com.backend.techstock.dto.ProductsDto;
 import com.backend.techstock.repository.brands;
 import com.backend.techstock.repository.products;
+import com.backend.techstock.repository.users;
 
 public class ProductsModel {
     private final JdbcClient jdbcClient;
@@ -17,9 +18,9 @@ public class ProductsModel {
         this.jdbcClient = jdbcClient;
     }
 
-    public List<ProductsDto> findAll(){
-        List<ProductsDto> productsDtoList = new ArrayList<>();
-        List<products> productsList = jdbcClient.sql("SELECT" +
+    private List<products> returnListProductsBD(int all, String name){
+
+        String sql = "SELECT" +
         " products.id," + 
         " products.name," + 
         " products.description," + 
@@ -31,19 +32,58 @@ public class ProductsModel {
         " FROM" + 
         " products" + 
         " JOIN" + 
-        " brands ON products.id_brand = brands.id;").query(products.class).list();
+        " brands ON products.id_brand = brands.id";
 
+        if(all == 0){
+            sql+=" WHERE products.name = :name";
+            return jdbcClient.sql(sql)
+                             .param("name", name)
+                             .query(products.class).list();
+        }
+
+        return jdbcClient.sql(sql).query(products.class).list();
+    }
+
+    private ProductsDto transformProductsDto(List<products> productsList, int i){
+        return new ProductsDto(productsList.get(i).id(), 
+        productsList.get(i).name(), 
+        productsList.get(i).description(), 
+        productsList.get(i).price(), 
+        productsList.get(i).quantity(), 
+        productsList.get(i).thumbnailPathname(), 
+        new brands(productsList.get(i).idBrand(), productsList.get(i).nameBrand()));
+
+    }
+
+    public List<ProductsDto> findAll(){
+        List<ProductsDto> productsDtoList = new ArrayList<>(); 
+        List<products> productsList = returnListProductsBD(1, "");
 
         for(int i = 0; i < productsList.size(); i++){
-            productsDtoList.add(new ProductsDto(productsList.get(i).id(), 
-            productsList.get(i).name(), 
-            productsList.get(i).description(), 
-            productsList.get(i).price(), 
-            productsList.get(i).quantity(), 
-            productsList.get(i).thumbnailPathname(), 
-            new brands(productsList.get(i).idBrand(), productsList.get(i).nameBrand())));
+            productsDtoList.add(transformProductsDto(productsList,i));
         }
 
         return productsDtoList;
+    }
+    
+    public List<ProductsDto> findProduct(String name){
+        List<ProductsDto> productsDtoList = new ArrayList<>(); 
+        List<products> productsList = returnListProductsBD(0, name);
+
+        productsDtoList.add(transformProductsDto(productsList,0));
+        
+        return productsDtoList;
+    }
+
+     public Integer create(products product){
+        return jdbcClient.sql("INSERT INTO products(name,description,price,quantity,thumbnail_pathname,id_brand)" + //
+                        " VALUES (:name, :description, :price, :quantity, :thumbnail_pathname, :id_brand)")
+                         .param("name", product.name())
+                         .param("description", product.description())
+                         .param("price", product.price())
+                         .param("quantity", product.quantity())
+                         .param("thumbnail_pathname", product.thumbnailPathname())
+                         .param("id_brand", product.idBrand())
+                         .update();
     }
 }
