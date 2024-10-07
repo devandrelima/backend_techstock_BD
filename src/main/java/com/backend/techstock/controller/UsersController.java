@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.techstock.model.UsersModel;
+import com.backend.techstock.repository.newusername;
 import com.backend.techstock.repository.users;
 
 @RestController
@@ -30,24 +32,42 @@ public class UsersController {
         return usersModel.findAll();
     }
 
-    @GetMapping("/{nameUser}")
-    public Optional<users> listUserByName(@PathVariable String nameUser) {
+    @PostMapping
+    public ResponseEntity insertUser(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
-    
-        return usersModel.findByName(nameUser);
         
+        try {
+            usersModel.create(user);   
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.ok("Usuário já existe.");
+        }
+
+        return ResponseEntity.ok("Usuário criado com sucesso");
     }
 
-    @PostMapping
-    public ResponseEntity insertUser2(@RequestBody users user) {
+    // Atualiza a senha, mas não verifica se o usuário existe ou não, ou seja, você pode atualizar a senha de um usuário
+    // que nem existe kkkkk
+    @PutMapping("/newpassword")
+    @Transactional                                                                      
+    public ResponseEntity updateUserPassword(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
+
+        usersModel.passwordUpdate(user);   
+        
+        return ResponseEntity.ok("Senha atualizada");
+    }
+
+    @PutMapping("/newusername")
+    @Transactional                                                                      
+    public ResponseEntity updateUserName(@RequestBody newusername newUserName) {
+        UsersModel usersModel = new UsersModel(jdbcClient);
+          
         try {
-            boolean test = usersModel.findByName(user.name()).isEmpty(); 
-            
-            return ResponseEntity.ok("O usuário já existe");
-        } catch (NullPointerException e) {
-            usersModel.create(user);
-            return ResponseEntity.ok("Usuário criado com sucesso");
+            usersModel.nameUpdate(newUserName);   
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.ok("Nome de usuário já existe, escolha outro.");
         }
+
+        return ResponseEntity.ok("Nome de usuário atualizado");
     }
 }
