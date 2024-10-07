@@ -86,6 +86,25 @@ public class ProductsModel {
                          .update();
     }
 
+    public Integer updateProduct(productToInsert product){
+        return jdbcClient.sql("UPDATE products" + 
+                        " SET name = :name," +
+                        "    description = :description," + 
+                        "    price = :price," + 
+                        "    quantity = :quantity," + 
+                        "    thumbnail_pathname = :thumbnail_pathname," + 
+                        "    id_brand = :id_brand" + 
+                        " WHERE id = :id")
+                         .param("id", product.id())
+                         .param("name", product.name())
+                         .param("description", product.description())
+                         .param("price", product.price())
+                         .param("quantity", product.quantity())
+                         .param("thumbnail_pathname", product.thumbnailPathname())
+                         .param("id_brand", product.idBrand())
+                         .update();
+    }
+
     public Integer deleteProduct(int id){
         return jdbcClient.sql("DELETE FROM products WHERE id = :id")
                          .param("id", id)
