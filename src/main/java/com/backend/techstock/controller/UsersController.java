@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.techstock.model.UsersModel;
+import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.newusername;
 import com.backend.techstock.repository.users;
 
@@ -47,47 +49,51 @@ public class UsersController {
     @PostMapping
     public ResponseEntity insertUser(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
-        
+        messageResponse message;
+
         try {
             usersModel.create(user);   
         } catch (DuplicateKeyException e) {
-            return ResponseEntity.ok("Usuário já existe.");
+            message = new messageResponse("Usuário já existe.");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-
-        return ResponseEntity.ok("Usuário criado com sucesso");
+        message = new messageResponse("Usuário criado com sucesso");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    // Atualiza a senha, mas não verifica se o usuário existe ou não, ou seja, você pode atualizar a senha de um usuário
-    // que nem existe kkkkk
     @PutMapping("/newpassword")
     @Transactional                                                                      
     public ResponseEntity updateUserPassword(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
         users userBox;
+        messageResponse message;
 
         try{
             userBox = usersModel.findUser(user.name());
         } catch(EmptyResultDataAccessException e){
-            return ResponseEntity.ok("Usuário não existe!");
+            message = new messageResponse("Usuário não existe.");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 
         usersModel.passwordUpdate(user);   
-        
-        return ResponseEntity.ok("Senha atualizada");
+        message = new messageResponse("Senha atualizada");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PutMapping("/newusername")
     @Transactional                                                                      
     public ResponseEntity updateUserName(@RequestBody newusername newUserName) {
         UsersModel usersModel = new UsersModel(jdbcClient);
+        messageResponse message;
           
         try {
             usersModel.nameUpdate(newUserName);   
         } catch (DuplicateKeyException e) {
-            return ResponseEntity.ok("Nome de usuário já existe, escolha outro.");
+            message = new messageResponse("Nome de usuário já existe, escolha outro.");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-
-        return ResponseEntity.ok("Nome de usuário atualizado");
+        message = new messageResponse("Nome de usuário atualizado");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @DeleteMapping
@@ -95,19 +101,22 @@ public class UsersController {
     public ResponseEntity deleteUser(@RequestBody users user){
         UsersModel usersModel = new UsersModel(jdbcClient);
         users userBox;
+        messageResponse message;
 
         try{
             userBox = usersModel.findUser(user.name());
         } catch(EmptyResultDataAccessException e){
-            return ResponseEntity.ok("Usuário não existe!");
+            message = new messageResponse("Usuário não existe!");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
 
         if(userBox.password().equals(user.password())){
             usersModel.deleteUser(user); 
-
-            return ResponseEntity.ok("Usuário Deletado com sucesso.");
+            message = new messageResponse("Usuário Deletado com sucesso.");
+            return new ResponseEntity<>(message, HttpStatus.OK);
         } else {
-            return ResponseEntity.ok("Senha incorreta, não podemos deletar esse usuário.");
+            message = new messageResponse("Senha incorreta, não podemos deletar esse usuário.");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
     }
 }
