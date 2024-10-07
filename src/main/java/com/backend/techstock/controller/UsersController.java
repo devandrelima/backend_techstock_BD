@@ -1,13 +1,14 @@
 package com.backend.techstock.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,17 @@ public class UsersController {
         return usersModel.findAll();
     }
 
+    @GetMapping("/{username}")
+    public users listUser(@PathVariable String username) {
+        UsersModel usersModel = new UsersModel(jdbcClient);
+        
+        try{
+            return  usersModel.findUser(username);
+        } catch(EmptyResultDataAccessException e){
+            return new users(0, " ", " ");
+        }
+    }
+
     @PostMapping
     public ResponseEntity insertUser(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
@@ -51,6 +63,13 @@ public class UsersController {
     @Transactional                                                                      
     public ResponseEntity updateUserPassword(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
+        users userBox;
+
+        try{
+            userBox = usersModel.findUser(user.name());
+        } catch(EmptyResultDataAccessException e){
+            return ResponseEntity.ok("Usuário não existe!");
+        }
 
         usersModel.passwordUpdate(user);   
         
@@ -69,5 +88,26 @@ public class UsersController {
         }
 
         return ResponseEntity.ok("Nome de usuário atualizado");
+    }
+
+    @DeleteMapping
+    @Transactional
+    public ResponseEntity deleteUser(@RequestBody users user){
+        UsersModel usersModel = new UsersModel(jdbcClient);
+        users userBox;
+
+        try{
+            userBox = usersModel.findUser(user.name());
+        } catch(EmptyResultDataAccessException e){
+            return ResponseEntity.ok("Usuário não existe!");
+        }
+
+        if(userBox.password().equals(user.password())){
+            usersModel.deleteUser(user); 
+
+            return ResponseEntity.ok("Usuário Deletado com sucesso.");
+        } else {
+            return ResponseEntity.ok("Senha incorreta, não podemos deletar esse usuário.");
+        }
     }
 }

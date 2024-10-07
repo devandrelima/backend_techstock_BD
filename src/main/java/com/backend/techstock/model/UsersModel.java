@@ -1,11 +1,6 @@
 package com.backend.techstock.model;
 
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +19,14 @@ public class UsersModel {
         return jdbcClient.sql("SELECT * FROM users").query(users.class).list();
     }
 
+    public users findUser(String userName){
+        return jdbcClient.sql("SELECT * FROM users WHERE name = :name")
+                         .param("name", userName)
+                         .query(users.class)
+                         .single();
+    }
+
+
     public Integer create(users user){
         return jdbcClient.sql("INSERT INTO users(name, password) VALUES (:name, :password)")
                          .param("name", user.name())
@@ -41,6 +44,12 @@ public class UsersModel {
     public Integer passwordUpdate(users user){
         return jdbcClient.sql("UPDATE users SET password = :newpassword WHERE name = :name")
                          .param("newpassword", user.password())
+                         .param("name", user.name())
+                         .update();
+    }
+
+    public Integer deleteUser(users user){
+        return jdbcClient.sql("DELETE FROM users WHERE name = :name")
                          .param("name", user.name())
                          .update();
     }
