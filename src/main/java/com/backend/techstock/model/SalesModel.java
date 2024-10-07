@@ -15,8 +15,8 @@ public class SalesModel {
         this.jdbcClient = jdbcClient;
     }
 
-    public List<sales> findAll(){
-        return jdbcClient.sql("SELECT * FROM sales").query(sales.class).list();
+    public List<salesToInsert> findAll(){
+        return jdbcClient.sql("SELECT * FROM sales").query(salesToInsert.class).list();
     }
     
     // Vai precisar de um join com a sales_product para criar a tela de editar venda

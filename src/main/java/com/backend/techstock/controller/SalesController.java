@@ -2,11 +2,10 @@ package com.backend.techstock.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -17,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.techstock.model.SalesModel;
-import com.backend.techstock.model.UsersModel;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.sales;
 import com.backend.techstock.repository.salesToInsert;
-import com.backend.techstock.repository.users;
 
 @RestController
 @RequestMapping("/sales")
@@ -32,7 +29,22 @@ public class SalesController {
     @GetMapping
     public List<sales> listAllUsers() {
         SalesModel salesModel = new SalesModel(jdbcClient);
-        return salesModel.findAll();
+        List<salesToInsert> listSales = salesModel.findAll();
+        List<sales> listSalesDateFormated = new ArrayList<>();
+        String hourFormated;
+        
+        for(int i = 0; i < listSales.size(); i++){
+            hourFormated = listSales.get(i).date_time().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+            listSalesDateFormated.add(new sales(listSales.get(i).id(), 
+                                                listSales.get(i).name(), 
+                                                listSales.get(i).description(),
+                                                listSales.get(i).discount(), 
+                                                hourFormated, 
+                                                listSales.get(i).id_users())); 
+        }
+        
+        return listSalesDateFormated;
     }
 
     @PostMapping
@@ -40,12 +52,16 @@ public class SalesController {
         SalesModel salesModel = new SalesModel(jdbcClient);
         messageResponse message;
 
-        
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"); // Deve estar de acordo com a string entregue do frontend
         LocalDateTime result = LocalDateTime.parse(sale.date_time(), format);
 
-        salesToInsert salestoinsert = new salesToInsert(sale.id(), sale.name(), sale.description(), sale.discount(), result, sale.id_users());
-        
+        salesToInsert salestoinsert = new salesToInsert(sale.id(), 
+                                                        sale.name(),
+                                                        sale.description(), 
+                                                        sale.discount(), 
+                                                        result, 
+                                                        sale.id_users());
+                                                        
         salesModel.create(salestoinsert);   
         
         message = new messageResponse("Venda registrada com sucesso");
