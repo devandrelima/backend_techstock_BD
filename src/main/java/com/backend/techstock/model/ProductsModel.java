@@ -1,6 +1,5 @@
 package com.backend.techstock.model;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +7,8 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 
 import com.backend.techstock.dto.ProductsDto;
 import com.backend.techstock.repository.brands;
+import com.backend.techstock.repository.productToInsert;
 import com.backend.techstock.repository.products;
-import com.backend.techstock.repository.users;
 
 public class ProductsModel {
     private final JdbcClient jdbcClient;
@@ -18,7 +17,7 @@ public class ProductsModel {
         this.jdbcClient = jdbcClient;
     }
 
-    private List<products> returnListProductsBD(int all, String name){
+    private List<products> returnListProductsBD(int all, int id){
 
         String sql = "SELECT" +
         " products.id," + 
@@ -35,9 +34,9 @@ public class ProductsModel {
         " brands ON products.id_brand = brands.id";
 
         if(all == 0){
-            sql+=" WHERE products.name = :name";
+            sql+=" WHERE products.id = :id";
             return jdbcClient.sql(sql)
-                             .param("name", name)
+                             .param("id", id)
                              .query(products.class).list();
         }
 
@@ -57,7 +56,7 @@ public class ProductsModel {
 
     public List<ProductsDto> findAll(){
         List<ProductsDto> productsDtoList = new ArrayList<>(); 
-        List<products> productsList = returnListProductsBD(1, "");
+        List<products> productsList = returnListProductsBD(1, 0);
 
         for(int i = 0; i < productsList.size(); i++){
             productsDtoList.add(transformProductsDto(productsList,i));
@@ -66,16 +65,16 @@ public class ProductsModel {
         return productsDtoList;
     }
     
-    public List<ProductsDto> findProduct(String name){
+    public List<ProductsDto> findProduct(int id){
         List<ProductsDto> productsDtoList = new ArrayList<>(); 
-        List<products> productsList = returnListProductsBD(0, name);
+        List<products> productsList = returnListProductsBD(0, id);
 
         productsDtoList.add(transformProductsDto(productsList,0));
         
         return productsDtoList;
     }
 
-     public Integer create(products product){
+     public Integer create(productToInsert product){
         return jdbcClient.sql("INSERT INTO products(name,description,price,quantity,thumbnail_pathname,id_brand)" + //
                         " VALUES (:name, :description, :price, :quantity, :thumbnail_pathname, :id_brand)")
                          .param("name", product.name())
@@ -84,6 +83,12 @@ public class ProductsModel {
                          .param("quantity", product.quantity())
                          .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id_brand", product.idBrand())
+                         .update();
+    }
+
+    public Integer deleteProduct(int id){
+        return jdbcClient.sql("DELETE FROM products WHERE id = :id")
+                         .param("id", id)
                          .update();
     }
 }
