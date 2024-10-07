@@ -6,16 +6,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.techstock.dto.ProductsDto;
+import com.backend.techstock.model.ProductsModel;
 import com.backend.techstock.model.SalesModel;
+import com.backend.techstock.model.UsersModel;
+import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.sales;
 import com.backend.techstock.repository.salesToInsert;
@@ -67,4 +76,36 @@ public class SalesController {
         message = new messageResponse("Venda registrada com sucesso");
         return new ResponseEntity<>(message, HttpStatus.OK);
     } 
+
+    @PutMapping()
+    @Transactional                                                                      
+    public ResponseEntity updateSale(@RequestBody sales sale) {
+        SalesModel salesModel = new SalesModel(jdbcClient);
+        messageResponse message;
+          
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"); // Deve estar de acordo com a string entregue do frontend
+        LocalDateTime result = LocalDateTime.parse(sale.date_time(), format);
+
+        salesToInsert salestoinsert = new salesToInsert(sale.id(), 
+                                                        sale.name(),
+                                                        sale.description(), 
+                                                        sale.discount(), 
+                                                        result, 
+                                                        sale.id_users());
+      
+        salesModel.updateSale(salestoinsert);                                     
+        message = new messageResponse("Alterações salvas.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity deleteSale(@PathVariable int id){
+        SalesModel salesModel = new SalesModel(jdbcClient);
+        messageResponse message;
+
+        salesModel.deleteSale(id);
+        message = new messageResponse("Venda apagada.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }

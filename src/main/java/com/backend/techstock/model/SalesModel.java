@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 
-import com.backend.techstock.repository.sales;
 import com.backend.techstock.repository.salesToInsert;
-import com.backend.techstock.repository.users;
 
 public class SalesModel { 
     private final JdbcClient jdbcClient;
@@ -32,6 +30,28 @@ public class SalesModel {
                          .param("discount", sale.discount())
                          .param("date_time", sale.date_time())
                          .param("id_users", sale.id_users())
+                         .update();
+    }
+
+    public Integer updateSale(salesToInsert sale){
+        return jdbcClient.sql(" UPDATE sales SET name = :name,"+
+                              " description = :description," +
+                              " discount = :discount,"+
+                              " date_time = :date_time,"+
+                              " id_users = :id_users"+
+                              " WHERE id = :id")
+                         .param("name", sale.name())
+                         .param("description", sale.description())
+                         .param("discount", sale.discount())
+                         .param("date_time", sale.date_time())
+                         .param("id_users", sale.id_users())
+                         .param("id", sale.id())
+                         .update();
+    }
+
+    public Integer deleteSale(int id){
+        return jdbcClient.sql("DELETE FROM sales WHERE id = :id")
+                         .param("id", id)
                          .update();
     }
 }
