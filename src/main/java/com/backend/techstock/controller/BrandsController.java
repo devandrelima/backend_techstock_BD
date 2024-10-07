@@ -19,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.techstock.model.BrandsModel;
-import com.backend.techstock.model.UsersModel;
 import com.backend.techstock.repository.brands;
 import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.messageResponse;
-import com.backend.techstock.repository.users;
 
 @RestController
 @RequestMapping("/brands")
