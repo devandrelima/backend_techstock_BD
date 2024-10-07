@@ -41,7 +41,7 @@ public class SalesController {
         messageResponse message;
 
         
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"); // Deve estar de acordo com a string entregue do frontend
         LocalDateTime result = LocalDateTime.parse(sale.date_time(), format);
 
         salesToInsert salestoinsert = new salesToInsert(sale.id(), sale.name(), sale.description(), sale.discount(), result, sale.id_users());
