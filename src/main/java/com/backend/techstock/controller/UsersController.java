@@ -36,13 +36,15 @@ public class UsersController {
     }
 
     @GetMapping("/{username}")
-    public users listUser(@PathVariable String username) {
+    public ResponseEntity listUser(@PathVariable String username) {
         UsersModel usersModel = new UsersModel(jdbcClient);
+        messageResponse message;
         
         try{
-            return  usersModel.findUser(username);
+            return new ResponseEntity<>(usersModel.findUser(username), HttpStatus.OK);
         } catch(EmptyResultDataAccessException e){
-            return new users(0, " ", " ");
+            message = new messageResponse("Usuário não encontrado");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
     }
 
