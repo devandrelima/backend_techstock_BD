@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.backend.techstock.model.UsersModel;
 import com.backend.techstock.repository.messageResponse;
@@ -29,7 +30,7 @@ public class UsersController {
     @Autowired
     private JdbcClient jdbcClient;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<users> listAllUsers() {
         UsersModel usersModel = new UsersModel(jdbcClient);
         return usersModel.findAll();
@@ -46,6 +47,24 @@ public class UsersController {
             message = new messageResponse("Usuário não encontrado");
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
+    }
+    
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody users user) {
+        UsersModel usersModel = new UsersModel(jdbcClient);
+        users response = null;
+        try {
+            response = usersModel.findUser(user.name());
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity<>("Nome de usuário incorreto.", HttpStatus.BAD_REQUEST);
+        }
+        
+        if(response.password().equals(user.password())){
+            usersModel.defineCurrentUser(response.id()); // Quando fizer o log, o usuário que está logado será registrado graças a esse set 
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("Senha incorreta.", HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping

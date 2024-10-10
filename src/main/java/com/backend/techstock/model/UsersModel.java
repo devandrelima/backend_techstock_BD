@@ -26,6 +26,10 @@ public class UsersModel {
                          .single();
     }
 
+    public void defineCurrentUser(int id) {
+        jdbcClient.sql("SET SESSION app.current_user_id = " + id)
+                  .update();
+    }
 
     public Integer create(users user){
         return jdbcClient.sql("INSERT INTO users(name, password) VALUES (:name, :password)")
