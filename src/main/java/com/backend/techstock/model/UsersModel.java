@@ -26,8 +26,10 @@ public class UsersModel {
                          .single();
     }
 
+    // Não estão funcionando
     public void defineCurrentUser(int id) {
-        jdbcClient.sql("SET SESSION app.current_user_id = " + id)
+        String sql = "SET SESSION app.current_user_id = " + id;
+        jdbcClient.sql(sql)
                   .update();
     }
 

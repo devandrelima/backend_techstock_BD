@@ -95,13 +95,13 @@ public class ProductsModel {
                         "    thumbnail_pathname = :thumbnail_pathname," + 
                         "    id_brand = :id_brand" + 
                         " WHERE id = :id")
-                         .param("id", product.id())
                          .param("name", product.name())
                          .param("description", product.description())
                          .param("price", product.price())
                          .param("quantity", product.quantity())
                          .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id_brand", product.idBrand())
+                         .param("id", product.id())
                          .update();
     }
 
