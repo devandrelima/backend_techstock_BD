@@ -52,19 +52,21 @@ public class UsersController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody users user) {
         UsersModel usersModel = new UsersModel(jdbcClient);
+        messageResponse message;
         users response = null;
         try {
             response = usersModel.findUser(user.name());
         } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>("Nome de usuário incorreto.", HttpStatus.BAD_REQUEST);
+            message = new messageResponse("Nome de usuário incorreto.");
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
         
         if(response.password().equals(user.password())){
-            usersModel.defineCurrentUser(response.id()); // Quando fizer o log, o usuário que está logado será registrado graças a esse set 
+            UsuarioLogado.globalVariable = response.id();
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-
-        return new ResponseEntity<>("Senha incorreta.", HttpStatus.BAD_REQUEST);
+        message = new messageResponse("Senha incorreta.");
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping

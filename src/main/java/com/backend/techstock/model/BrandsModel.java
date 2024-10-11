@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 
+import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.repository.brands;
 import com.backend.techstock.repository.changeName;
 
@@ -26,8 +27,9 @@ public class BrandsModel {
     }
 
     public Integer create(brands brand){
-        return jdbcClient.sql("INSERT INTO brands(name) VALUES (:name)")
+        return jdbcClient.sql("INSERT INTO brands(name,modified_by) VALUES (:name,:modified_by)")
                          .param("name", brand.name())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
