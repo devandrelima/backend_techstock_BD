@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 public record SalesDto( 
-              String saleName, 
-              String saleDescription,
-              BigDecimal saleDiscount,
-              LocalDateTime saleDate) {} 
+              String name, 
+              String description,
+              BigDecimal discount,
+              LocalDateTime date_time) {} 

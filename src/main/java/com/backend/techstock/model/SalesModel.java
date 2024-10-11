@@ -30,16 +30,26 @@ public class SalesModel {
     //}
 
 
+
+
+
+
+
+
+
     public SaleWithProductsDto findSaleById(int saleId) {
 
-        List<SalesDto> salesDto = jdbcClient.sql("SELECT name, description, discount, date_time FROM sales")
-                        .query(SalesDto.class).list();
+        SalesDto salesDto = jdbcClient.sql("SELECT name, description, discount, date_time FROM sales WHERE id = :id")
+                                    .param("id", saleId)                
+                                    .query(SalesDto.class).single();
 
-        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT * FROM products_sale_datas WHERE id_sales = :id")
+        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT product_name AS name , product_price AS price, brand_name AS brand,"+ 
+        "quantity_sold AS quantity, product_photo AS thumbnail_pathname" +
+        " FROM products_sale_datas WHERE id_sales = :id")
                                             .param("id", saleId)
                                             .query(ProductSaleDto.class).list();
 
-    return new SaleWithProductsDto(null, productSaleDto);
+        return new SaleWithProductsDto(salesDto, productSaleDto);
     }
 
 

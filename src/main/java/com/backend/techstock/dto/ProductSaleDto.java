@@ -1,8 +1,7 @@
 package com.backend.techstock.dto;
 
 public record ProductSaleDto(String name,
-double productPrice,
+double price,
 String brand,
 int quantity,
-double salePrice,
-String productPhoto) {}
+String thumbnail_pathname) {}
