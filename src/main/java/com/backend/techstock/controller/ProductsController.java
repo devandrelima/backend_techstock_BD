@@ -62,7 +62,6 @@ public class ProductsController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
     
-    // Não estão funcionando
     @PutMapping("/update")
     @Transactional                                                                      
     public ResponseEntity updateUserName(@RequestBody productToInsert product) {

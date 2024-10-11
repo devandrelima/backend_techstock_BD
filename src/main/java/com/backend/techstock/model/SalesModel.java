@@ -29,38 +29,17 @@ public class SalesModel {
     //    return jdbcClient.sql("SELECT * FROM sales").query(sales.class).list();
     //}
 
-        public SaleWithProductsDto findSaleById(int saleId) {
 
-        SalesDto salesDto = jdbcClient.sql("SELECT * FROM products_sale_datas WHERE id_sales = 2")
-                        .query(SalesDto.class).single();
+    public SaleWithProductsDto findSaleById(int saleId) {
 
-/*
-public record SalesDto( 
-String saleName, 
-String saleDescription,
-double saleDiscount,
-LocalDateTime saleDate) {} 
- */
+        List<SalesDto> salesDto = jdbcClient.sql("SELECT name, description, discount, date_time FROM sales")
+                        .query(SalesDto.class).list();
 
-        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT" + 
-                                            " p.name AS product_name," +
-                                            " p.price AS product_price," +
-                                            " b.name AS brand_name," + 
-                                            " sp.quantity AS quantity_sold," +
-                                            " sp.price AS sale_price," +
-                                            " p.thumbnail_pathname AS product_photo" +
-                                            " FROM" +
-                                            " sales_product sp" +
-                                            " JOIN" +
-                                            " products p ON sp.id_product = p.id" +
-                                            " JOIN" +
-                                            " brands b ON p.id_brand = b.id" +
-                                            " WHERE" +
-                                            " sp.id_sales = :id")
+        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT * FROM products_sale_datas WHERE id_sales = :id")
                                             .param("id", saleId)
                                             .query(ProductSaleDto.class).list();
 
-        return new SaleWithProductsDto(null, productSaleDto);
+    return new SaleWithProductsDto(null, productSaleDto);
     }
 
 
