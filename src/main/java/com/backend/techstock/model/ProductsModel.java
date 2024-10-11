@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 
+import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.dto.ProductsDto;
 import com.backend.techstock.repository.brands;
 import com.backend.techstock.repository.productToInsert;
@@ -75,14 +76,15 @@ public class ProductsModel {
     }
 
      public Integer create(productToInsert product){
-        return jdbcClient.sql("INSERT INTO products(name,description,price,quantity,thumbnail_pathname,id_brand)" + //
-                        " VALUES (:name, :description, :price, :quantity, :thumbnail_pathname, :id_brand)")
+        return jdbcClient.sql("INSERT INTO products(name,description,price,quantity,thumbnail_pathname,id_brand,modified_by)" + //
+                        " VALUES (:name, :description, :price, :quantity, :thumbnail_pathname, :id_brand,:modified_by)")
                          .param("name", product.name())
                          .param("description", product.description())
                          .param("price", product.price())
                          .param("quantity", product.quantity())
                          .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id_brand", product.idBrand())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
@@ -93,7 +95,8 @@ public class ProductsModel {
                         "    price = :price," + 
                         "    quantity = :quantity," + 
                         "    thumbnail_pathname = :thumbnail_pathname," + 
-                        "    id_brand = :id_brand" + 
+                        "    id_brand = :id_brand," +
+                        "    modified_by = :modified_by" + 
                         " WHERE id = :id")
                          .param("name", product.name())
                          .param("description", product.description())
@@ -102,6 +105,7 @@ public class ProductsModel {
                          .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id_brand", product.idBrand())
                          .param("id", product.id())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
