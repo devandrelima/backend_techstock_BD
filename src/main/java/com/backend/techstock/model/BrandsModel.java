@@ -35,9 +35,10 @@ public class BrandsModel {
 
     
     public Integer brandNameUpdate(changeName newUserName){
-        return jdbcClient.sql("UPDATE brands SET name = :newName WHERE name = :oldName")
+        return jdbcClient.sql("UPDATE brands SET name = :newName, modified_by = :modified_by WHERE name = :oldName")
                          .param("newName", newUserName.newName())
                          .param("oldName", newUserName.oldName())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 

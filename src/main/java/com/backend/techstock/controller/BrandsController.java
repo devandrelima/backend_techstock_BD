@@ -64,7 +64,7 @@ public class BrandsController {
 
     @PutMapping
     @Transactional                                                                      
-    public ResponseEntity updateUserName(@RequestBody changeName newUserName) {
+    public ResponseEntity updateBrandName(@RequestBody changeName newUserName) {
         BrandsModel brandsModel = new BrandsModel(jdbcClient);
         messageResponse message;
           

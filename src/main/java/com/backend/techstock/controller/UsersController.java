@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.backend.techstock.model.UsersModel;
-import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.changeName;
+import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.users;
 
 @RestController
