@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -20,11 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.techstock.dto.ProductsDto;
-import com.backend.techstock.model.ProductsModel;
 import com.backend.techstock.model.SalesModel;
-import com.backend.techstock.model.UsersModel;
-import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.sales;
 import com.backend.techstock.repository.salesToInsert;
