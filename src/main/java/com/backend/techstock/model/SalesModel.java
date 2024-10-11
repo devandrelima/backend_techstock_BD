@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 
+import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.repository.salesToInsert;
 
 public class SalesModel { 
@@ -23,13 +24,14 @@ public class SalesModel {
     //}
 
     public Integer create(salesToInsert sale){
-        return jdbcClient.sql("INSERT INTO sales(name, description,discount,date_time,id_users)" +
-                              "VALUES (:name, :description, :discount, :date_time, :id_users)")
+        return jdbcClient.sql("INSERT INTO sales(name, description,discount,date_time,id_users,modified_by)" +
+                              "VALUES (:name, :description, :discount, :date_time, :id_users, :modified_by)")
                          .param("name", sale.name())
                          .param("description", sale.description())
                          .param("discount", sale.discount())
                          .param("date_time", sale.date_time())
-                         .param("id_users", sale.id_users())
+                         .param("id_users", UsuarioLogado.globalVariable) // O usuário que registra já é o que está logado
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
@@ -38,14 +40,16 @@ public class SalesModel {
                               " description = :description," +
                               " discount = :discount,"+
                               " date_time = :date_time,"+
-                              " id_users = :id_users"+
-                              " WHERE id = :id")
+                              " id_users = :id_users,"+
+                              " modified_by = :modified_by" +
+                              " WHERE id = :id") 
                          .param("name", sale.name())
                          .param("description", sale.description())
                          .param("discount", sale.discount())
                          .param("date_time", sale.date_time())
                          .param("id_users", sale.id_users())
                          .param("id", sale.id())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
