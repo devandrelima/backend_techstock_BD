@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.users;
 
@@ -26,31 +27,27 @@ public class UsersModel {
                          .single();
     }
 
-    // Não estão funcionando
-    public void defineCurrentUser(int id) {
-        String sql = "SET SESSION app.current_user_id = " + id;
-        jdbcClient.sql(sql)
-                  .update();
-    }
-
     public Integer create(users user){
-        return jdbcClient.sql("INSERT INTO users(name, password) VALUES (:name, :password)")
+        return jdbcClient.sql("INSERT INTO users(name, password, modified_by) VALUES (:name, :password, :modified_by)")
                          .param("name", user.name())
                          .param("password", user.password())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
     public Integer nameUpdate(changeName newUserName){
-        return jdbcClient.sql("UPDATE users SET name = :newName WHERE name = :oldName")
+        return jdbcClient.sql("UPDATE users SET name = :newName, modified_by = :modified_by WHERE name = :oldName")
                          .param("newName", newUserName.newName())
                          .param("oldName", newUserName.oldName())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
     public Integer passwordUpdate(users user){
-        return jdbcClient.sql("UPDATE users SET password = :newpassword WHERE name = :name")
+        return jdbcClient.sql("UPDATE users SET password = :newpassword, modified_by = :modified_by WHERE name = :name")
                          .param("newpassword", user.password())
                          .param("name", user.name())
+                         .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
 
