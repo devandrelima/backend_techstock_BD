@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.techstock.dto.SaleWithProductsDto;
+import com.backend.techstock.dto.SalesDto;
 import com.backend.techstock.model.SalesModel;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.sales;
@@ -50,6 +52,14 @@ public class SalesController {
         
         return listSalesDateFormated;
     }
+
+    @GetMapping("/{saleId}")
+    public SaleWithProductsDto getSaleById(@PathVariable int saleId) {
+        SalesModel salesModel = new SalesModel(jdbcClient);
+
+        return salesModel.findSaleById(saleId);
+    }
+
 
     @PostMapping
     public ResponseEntity insertSale(@RequestBody sales sale) {
