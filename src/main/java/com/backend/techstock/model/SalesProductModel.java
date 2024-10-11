@@ -29,4 +29,21 @@ public class SalesProductModel {
                          .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
     }
+
+     public Integer update(salesProducts saleProduct){
+        return jdbcClient.sql("UPDATE sales_product SET quantity = :quantity, price = :price, id_product = :id_product, id_sales = :id_sales, modified_by = :modified_by WHERE id = :id;")                
+                        .param("id", saleProduct.id())
+                        .param("quantity", saleProduct.quantity())
+                        .param("price", saleProduct.price())
+                        .param("id_product", saleProduct.idProduct())
+                        .param("id_sales", saleProduct.id_sales())
+                        .param("modified_by", UsuarioLogado.globalVariable)
+                        .update();
+    }
+
+     public Integer delete(int id){
+        return jdbcClient.sql("DELETE FROM sales_product WHERE id = :id")
+                         .param("id", id)
+                         .update();
+    }
 }
