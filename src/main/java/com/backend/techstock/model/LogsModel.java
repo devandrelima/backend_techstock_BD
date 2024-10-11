@@ -13,8 +13,7 @@ public class LogsModel {
         this.jdbcClient = jdbcClient;
     }
     
-     // Não estão funcionando
     public List<logs> findAll(){
-        return jdbcClient.sql("SELECT * FROM logs").query(logs.class).list();
+        return jdbcClient.sql("SELECT * FROM log_user_view").query(logs.class).list();
     }
 }
