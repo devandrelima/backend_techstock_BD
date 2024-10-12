@@ -8,7 +8,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.core.simple.JdbcClient.MappedQuerySpec;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import com.backend.techstock.repository.brands;
 import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.messageResponse;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/brands")
 public class BrandsController {
@@ -53,13 +56,11 @@ public class BrandsController {
         messageResponse message;
 
         try {
-            brandsModel.create(brand);   
+            return new ResponseEntity<>(brandsModel.create(brand), HttpStatus.OK);   
         } catch (DuplicateKeyException e) {
             message = new messageResponse("A empresa já está cadastrada.");
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-        message = new messageResponse("Empresa cadastrada com sucesso.");
-        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PutMapping

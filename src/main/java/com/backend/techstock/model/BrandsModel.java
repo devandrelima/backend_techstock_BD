@@ -3,6 +3,7 @@ package com.backend.techstock.model;
 import java.util.List;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.core.simple.JdbcClient.MappedQuerySpec;
 
 import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.repository.brands;
@@ -26,11 +27,11 @@ public class BrandsModel {
                          .single();
     }
 
-    public Integer create(brands brand){
-        return jdbcClient.sql("INSERT INTO brands(name,modified_by) VALUES (:name,:modified_by)")
+    public brands create(brands brand){
+        return jdbcClient.sql("INSERT INTO brands(name,modified_by) VALUES (:name,:modified_by) RETURNING *")
                          .param("name", brand.name())
                          .param("modified_by", UsuarioLogado.globalVariable)
-                         .update();
+                         .query(brands.class).single();
     }
 
     
