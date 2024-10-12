@@ -35,7 +35,7 @@ public class SalesController {
     private JdbcClient jdbcClient;
 
     @GetMapping
-    public List<salesToInsert> listAllUsers() {
+    public List<salesToInsert> listAllSales() {
         SalesModel salesModel = new SalesModel(jdbcClient);
         List<salesToInsert> listSales = salesModel.findAll();
         
@@ -83,7 +83,7 @@ public class SalesController {
                                                         sale.description(), 
                                                         sale.discount(), 
                                                         result, 
-                                                        sale.id_users());
+                                                        UsuarioLogado.globalVariable);
       
         salesModel.updateSale(salestoinsert);                                     
         message = new messageResponse("Alterações salvas.");

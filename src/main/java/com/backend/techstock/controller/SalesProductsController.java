@@ -52,7 +52,7 @@ public class SalesProductsController {
 
     @PutMapping()
     @Transactional                                                                      
-    public ResponseEntity updateUserPassword(@RequestBody salesProducts saleProduct) {
+    public ResponseEntity updateSaleProduct(@RequestBody salesProducts saleProduct) {
         SalesProductModel salesProductModel = new SalesProductModel(jdbcClient);
         
         salesProductModel.update(saleProduct);

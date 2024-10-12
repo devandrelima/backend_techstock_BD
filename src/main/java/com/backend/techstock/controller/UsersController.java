@@ -76,13 +76,11 @@ public class UsersController {
         messageResponse message;
 
         try {
-            usersModel.create(user);   
+            return new ResponseEntity<>(usersModel.create(user), HttpStatus.OK);   
         } catch (DuplicateKeyException e) {
             message = new messageResponse("Usuário já existe.");
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-        message = new messageResponse("Usuário criado com sucesso");
-        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PutMapping("/newpassword")

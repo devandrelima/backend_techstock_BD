@@ -43,8 +43,8 @@ public class SalesModel {
                                     .param("id", saleId)                
                                     .query(SalesDto.class).single();
 
-        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT product_name AS name , product_price AS price, brand_name AS brand,"+ 
-        "quantity_sold AS quantity, product_photo AS thumbnail_pathname, id" +
+        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT product_name AS name , sale_price AS price, brand_name AS brand,"+ 
+        "quantity_sold AS quantity, product_photo AS thumbnail_pathname, id, saleproduct_id" +
         " FROM products_sale_datas WHERE id_sales = :id")
                                             .param("id", saleId)
                                             .query(ProductSaleDto.class).list();
