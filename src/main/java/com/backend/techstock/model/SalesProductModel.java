@@ -22,9 +22,10 @@ public class SalesProductModel {
     }
 
     public Integer insert(salesProducts saleProduct){
-        jdbcClient.sql("UPDATE products SET modified_by = :userId WHERE id = :id")
-            .param("userId", UsuarioLogado.globalVariable)
-            .param("id", saleProduct.id())
+        System.out.println(UsuarioLogado.globalVariable + "AAAAAAAAAAAAAAAAAAAAAAAAA");
+        jdbcClient.sql("UPDATE products SET modified_by = :user_id WHERE id = :id")
+            .param("user_id", UsuarioLogado.globalVariable)
+            .param("id", saleProduct.idProduct())
             .update();
 
         int result = jdbcClient.sql("INSERT INTO sales_product(quantity, price, id_product, id_sales, modified_by)" +
