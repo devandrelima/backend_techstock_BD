@@ -22,6 +22,11 @@ public class SalesProductModel {
     }
 
     public Integer insert(salesProducts saleProduct){
+        jdbcClient.sql("UPDATE products SET modified_by = :userId WHERE id = :id")
+            .param("userId", UsuarioLogado.globalVariable)
+            .param("id", saleProduct.id())
+            .update();
+
         int result = jdbcClient.sql("INSERT INTO sales_product(quantity, price, id_product, id_sales, modified_by)" +
                                " VALUES (:quantity, :price, :id_product, :id_sales, :modified_by)")
                          .param("quantity", saleProduct.quantity())

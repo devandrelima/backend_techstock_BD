@@ -15,7 +15,7 @@ public class LogsModel {
     }
     
     public List<logsView> findAll(){
-        return jdbcClient.sql("SELECT * FROM log_user_view").query(logsView.class).list();
+        return jdbcClient.sql("SELECT * FROM log_user_view ORDER BY datetime DESC").query(logsView.class).list();
     }
 
     public Integer create(logs log){
