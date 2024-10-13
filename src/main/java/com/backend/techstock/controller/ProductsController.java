@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import com.backend.techstock.model.ProductsModel;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.productToInsert;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/products")
 public class ProductsController {
@@ -53,22 +55,29 @@ public class ProductsController {
         messageResponse message;
 
         try {
-            productsModel.create(product);   
+            if (product.idBrand() == 0) {
+                return new ResponseEntity<>(productsModel.createWithoutBrand(product), HttpStatus.OK);   
+            } else {
+                return new ResponseEntity<>(productsModel.create(product), HttpStatus.OK);   
+            }
         } catch (DataIntegrityViolationException e) {
             message = new messageResponse("Produto já existe.");
+            System.out.println(e);
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-        message = new messageResponse("Produto cadastrado com sucesso");
-        return new ResponseEntity<>(message, HttpStatus.OK);
     }
     
-    @PutMapping("/update")
+    @PutMapping()
     @Transactional                                                                      
     public ResponseEntity updateUserName(@RequestBody productToInsert product) {
         ProductsModel productsModel = new ProductsModel(jdbcClient);
         messageResponse message;
   
-        productsModel.updateProduct(product);   
+        if (product.idBrand() == 0) {
+            productsModel.updateProductWithoutBrand(product);   
+        } else {
+            productsModel.updateProduct(product);   
+        }
         
         message = new messageResponse("Produto atualizado com sucesso.");
         return new ResponseEntity<>(message, HttpStatus.OK);
@@ -78,7 +87,7 @@ public class ProductsController {
     @Transactional
     public ResponseEntity deleteProduct(@PathVariable int id){
         ProductsModel productsModel = new ProductsModel(jdbcClient);
-        List<ProductsDto> productBox;
+        ProductsDto productBox;
         messageResponse message;
 
         try{

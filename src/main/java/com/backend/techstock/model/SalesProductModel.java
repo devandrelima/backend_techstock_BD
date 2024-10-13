@@ -8,6 +8,8 @@ import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.repository.salesProducts;
 import com.backend.techstock.repository.users;
 
+import java.sql.*;
+
 public class SalesProductModel {
     private final JdbcClient jdbcClient;
 
@@ -20,7 +22,13 @@ public class SalesProductModel {
     }
 
     public Integer insert(salesProducts saleProduct){
-        return jdbcClient.sql("INSERT INTO sales_product(quantity, price, id_product, id_sales, modified_by)" +
+        System.out.println(UsuarioLogado.globalVariable + "AAAAAAAAAAAAAAAAAAAAAAAAA");
+        jdbcClient.sql("UPDATE products SET modified_by = :user_id WHERE id = :id")
+            .param("user_id", UsuarioLogado.globalVariable)
+            .param("id", saleProduct.idProduct())
+            .update();
+
+        int result = jdbcClient.sql("INSERT INTO sales_product(quantity, price, id_product, id_sales, modified_by)" +
                                " VALUES (:quantity, :price, :id_product, :id_sales, :modified_by)")
                          .param("quantity", saleProduct.quantity())
                          .param("price", saleProduct.price())
@@ -28,15 +36,27 @@ public class SalesProductModel {
                          .param("id_sales", saleProduct.id_sales())
                          .param("modified_by", UsuarioLogado.globalVariable)
                          .update();
+
+        String sql = "SELECT sub_quantity_product(" + saleProduct.idProduct() + "," + saleProduct.quantity() + ");";
+
+        try (
+            Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/techstock", "postgres", "acesso");
+            Statement stmt = conn.createStatement();
+            CallableStatement callableStatement = conn.prepareCall(sql);
+        ) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+
+        return result;
     }
 
      public Integer update(salesProducts saleProduct){
-        return jdbcClient.sql("UPDATE sales_product SET quantity = :quantity, price = :price, id_product = :id_product, id_sales = :id_sales, modified_by = :modified_by WHERE id = :id;")                
+        return jdbcClient.sql("UPDATE sales_product SET quantity = :quantity, price = :price, modified_by = :modified_by WHERE id = :id")                
                         .param("id", saleProduct.id())
                         .param("quantity", saleProduct.quantity())
                         .param("price", saleProduct.price())
-                        .param("id_product", saleProduct.idProduct())
-                        .param("id_sales", saleProduct.id_sales())
                         .param("modified_by", UsuarioLogado.globalVariable)
                         .update();
     }

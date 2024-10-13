@@ -1,7 +1,11 @@
 package com.backend.techstock.dto;
 
-public record ProductSaleDto(String name,
+import java.util.Optional;
+
+public record ProductSaleDto(Optional<String> name,
 double price,
-String brand,
+Optional<String> brand,
 int quantity,
-String thumbnail_pathname) {}
+Optional<Integer> id,
+String thumbnail_pathname,
+int saleproduct_id) {}

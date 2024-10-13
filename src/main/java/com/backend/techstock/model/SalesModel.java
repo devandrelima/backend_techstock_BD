@@ -21,7 +21,7 @@ public class SalesModel {
     }
 
     public List<salesToInsert> findAll(){
-        return jdbcClient.sql("SELECT * FROM sales").query(salesToInsert.class).list();
+        return jdbcClient.sql("SELECT * FROM sales ORDER BY date_time DESC").query(salesToInsert.class).list();
     }
     
     // Vai precisar de um join com a sales_product para criar a tela de editar venda
@@ -39,12 +39,12 @@ public class SalesModel {
 
     public SaleWithProductsDto findSaleById(int saleId) {
 
-        SalesDto salesDto = jdbcClient.sql("SELECT name, description, discount, date_time FROM sales WHERE id = :id")
+        SalesDto salesDto = jdbcClient.sql("SELECT id, name, description, discount, date_time FROM sales WHERE id = :id")
                                     .param("id", saleId)                
                                     .query(SalesDto.class).single();
 
-        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT product_name AS name , product_price AS price, brand_name AS brand,"+ 
-        "quantity_sold AS quantity, product_photo AS thumbnail_pathname" +
+        List<ProductSaleDto> productSaleDto = jdbcClient.sql("SELECT product_name AS name , sale_price AS price, brand_name AS brand,"+ 
+        "quantity_sold AS quantity, product_photo AS thumbnail_pathname, id, saleproduct_id" +
         " FROM products_sale_datas WHERE id_sales = :id")
                                             .param("id", saleId)
                                             .query(ProductSaleDto.class).list();
@@ -66,16 +66,17 @@ public class SalesModel {
 
 
 
-    public Integer create(salesToInsert sale){
+    public salesToInsert create(salesToInsert sale){
         return jdbcClient.sql("INSERT INTO sales(name, description,discount,date_time,id_users,modified_by)" +
-                              "VALUES (:name, :description, :discount, :date_time, :id_users, :modified_by)")
+                              "VALUES (:name, :description, :discount, :date_time, :id_users, :modified_by) RETURNING *"
+                            )
                          .param("name", sale.name())
                          .param("description", sale.description())
                          .param("discount", sale.discount())
                          .param("date_time", sale.date_time())
                          .param("id_users", UsuarioLogado.globalVariable) // O usuário que registra já é o que está logado
                          .param("modified_by", UsuarioLogado.globalVariable)
-                         .update();
+                         .query(salesToInsert.class).single();
     }
 
     public Integer updateSale(salesToInsert sale){

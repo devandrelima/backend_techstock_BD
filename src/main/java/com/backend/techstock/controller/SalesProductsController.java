@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +23,10 @@ import com.backend.techstock.model.SalesProductModel;
 import com.backend.techstock.model.UsersModel;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.salesProducts;
+import com.backend.techstock.repository.salesProductsJson;
 import com.backend.techstock.repository.users;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/saleproducts")
 public class SalesProductsController {
@@ -36,21 +39,12 @@ public class SalesProductsController {
         return salesProductModel.findAll();
     }
 
-    @PostMapping
-    public ResponseEntity insertOneSaleProduct(@RequestBody salesProducts product) {
+   @PostMapping()
+    public ResponseEntity insertSaleProducts(@RequestBody salesProductsJson salesProducts) {
         SalesProductModel salesProductModel = new SalesProductModel(jdbcClient);
 
-        salesProductModel.insert(product);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    // Esse "post" será chamado no sales
-    public ResponseEntity insertSaleProducts(List<salesProducts> salesProducts) {
-        SalesProductModel salesProductModel = new SalesProductModel(jdbcClient);
-
-        for(int i = 0; i < salesProducts.size(); i++){
-            salesProductModel.insert(salesProducts.get(i));   
+        for(int i = 0; i < salesProducts.products().size(); i++){
+            salesProductModel.insert(salesProducts.products().get(i));   
         }
 
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -58,7 +52,7 @@ public class SalesProductsController {
 
     @PutMapping()
     @Transactional                                                                      
-    public ResponseEntity updateUserPassword(@RequestBody salesProducts saleProduct) {
+    public ResponseEntity updateSaleProduct(@RequestBody salesProducts saleProduct) {
         SalesProductModel salesProductModel = new SalesProductModel(jdbcClient);
         
         salesProductModel.update(saleProduct);

@@ -9,6 +9,7 @@ import com.backend.techstock.controller.UsuarioLogado;
 import com.backend.techstock.dto.ProductsDto;
 import com.backend.techstock.repository.brands;
 import com.backend.techstock.repository.productToInsert;
+import com.backend.techstock.repository.productToInsertWithouBrand;
 import com.backend.techstock.repository.products;
 
 public class ProductsModel {
@@ -66,18 +67,18 @@ public class ProductsModel {
         return productsDtoList;
     }
     
-    public List<ProductsDto> findProduct(int id){
+    public ProductsDto findProduct(int id){
         List<ProductsDto> productsDtoList = new ArrayList<>(); 
         List<products> productsList = returnListProductsBD(0, id);
 
         productsDtoList.add(transformProductsDto(productsList,0));
         
-        return productsDtoList;
+        return productsDtoList.get(0);
     }
 
-     public Integer create(productToInsert product){
+     public productToInsert create(productToInsert product){
         return jdbcClient.sql("INSERT INTO products(name,description,price,quantity,thumbnail_pathname,id_brand,modified_by)" + //
-                        " VALUES (:name, :description, :price, :quantity, :thumbnail_pathname, :id_brand,:modified_by)")
+                        " VALUES (:name, :description, taxa(" + product.price() + "), :quantity, :thumbnail_pathname, :id_brand,:modified_by) RETURNING *")
                          .param("name", product.name())
                          .param("description", product.description())
                          .param("price", product.price())
@@ -85,14 +86,25 @@ public class ProductsModel {
                          .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id_brand", product.idBrand())
                          .param("modified_by", UsuarioLogado.globalVariable)
-                         .update();
+                         .query(productToInsert.class).single();
+    }
+
+     public productToInsertWithouBrand createWithoutBrand(productToInsert product){
+        return jdbcClient.sql("INSERT INTO products(name,description,price,quantity,thumbnail_pathname,modified_by)" + //
+                        " VALUES (:name, :description, taxa(:price), :quantity, :thumbnail_pathname,:modified_by) RETURNING *")
+                         .param("name", product.name())
+                         .param("description", product.description())
+                         .param("quantity", product.quantity())
+                         .param("thumbnail_pathname", product.thumbnailPathname())
+                         .param("modified_by", UsuarioLogado.globalVariable)
+                         .query(productToInsertWithouBrand.class).single();
     }
 
     public Integer updateProduct(productToInsert product){
         return jdbcClient.sql("UPDATE products" + 
                         " SET name = :name," +
                         "    description = :description," + 
-                        "    price = :price," + 
+                        "    price = taxa(" + product.price() + ")," + 
                         "    quantity = :quantity," + 
                         "    thumbnail_pathname = :thumbnail_pathname," + 
                         "    id_brand = :id_brand," +
@@ -100,10 +112,28 @@ public class ProductsModel {
                         " WHERE id = :id")
                          .param("name", product.name())
                          .param("description", product.description())
-                         .param("price", product.price())
                          .param("quantity", product.quantity())
                          .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id_brand", product.idBrand())
+                         .param("id", product.id())
+                         .param("modified_by", UsuarioLogado.globalVariable)
+                         .update();
+    }
+
+    public Integer updateProductWithoutBrand(productToInsert product){
+        return jdbcClient.sql("UPDATE products" + 
+                        " SET name = :name," +
+                        "    description = :description," + 
+                        "    price = :price," + 
+                        "    quantity = :quantity," + 
+                        "    thumbnail_pathname = :thumbnail_pathname," + 
+                        "    modified_by = :modified_by" + 
+                        " WHERE id = :id")
+                         .param("name", product.name())
+                         .param("description", product.description())
+                         .param("price", product.price())
+                         .param("quantity", product.quantity())
+                         .param("thumbnail_pathname", product.thumbnailPathname())
                          .param("id", product.id())
                          .param("modified_by", UsuarioLogado.globalVariable)
                          .update();

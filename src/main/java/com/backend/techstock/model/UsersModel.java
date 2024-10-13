@@ -27,12 +27,12 @@ public class UsersModel {
                          .single();
     }
 
-    public Integer create(users user){
-        return jdbcClient.sql("INSERT INTO users(name, password, modified_by) VALUES (:name, :password, :modified_by)")
+    public users create(users user){
+        return jdbcClient.sql("INSERT INTO users(name, password, modified_by) VALUES (:name, :password, :modified_by) RETURNING *")
                          .param("name", user.name())
                          .param("password", user.password())
                          .param("modified_by", UsuarioLogado.globalVariable)
-                         .update();
+                         .query(users.class).single();
     }
 
     public Integer nameUpdate(changeName newUserName){

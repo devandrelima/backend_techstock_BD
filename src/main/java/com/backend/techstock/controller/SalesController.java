@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.sales;
 import com.backend.techstock.repository.salesToInsert;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/sales")
 public class SalesController {
@@ -33,24 +35,11 @@ public class SalesController {
     private JdbcClient jdbcClient;
 
     @GetMapping
-    public List<sales> listAllUsers() {
+    public List<salesToInsert> listAllSales() {
         SalesModel salesModel = new SalesModel(jdbcClient);
         List<salesToInsert> listSales = salesModel.findAll();
-        List<sales> listSalesDateFormated = new ArrayList<>();
-        String hourFormated;
         
-        for(int i = 0; i < listSales.size(); i++){
-            hourFormated = listSales.get(i).date_time().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-
-            listSalesDateFormated.add(new sales(listSales.get(i).id(), 
-                                                listSales.get(i).name(), 
-                                                listSales.get(i).description(),
-                                                listSales.get(i).discount(), 
-                                                hourFormated, 
-                                                listSales.get(i).id_users())); 
-        }
-        
-        return listSalesDateFormated;
+        return listSales;
     }
 
     @GetMapping("/{saleId}")
@@ -76,10 +65,8 @@ public class SalesController {
                                                         result, 
                                                         sale.id_users());
                                                         
-        salesModel.create(salestoinsert);   
         
-        message = new messageResponse("Venda registrada com sucesso");
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<>(salesModel.create(salestoinsert) , HttpStatus.OK);
     } 
 
     @PutMapping()
@@ -96,7 +83,7 @@ public class SalesController {
                                                         sale.description(), 
                                                         sale.discount(), 
                                                         result, 
-                                                        sale.id_users());
+                                                        UsuarioLogado.globalVariable);
       
         salesModel.updateSale(salestoinsert);                                     
         message = new messageResponse("Alterações salvas.");

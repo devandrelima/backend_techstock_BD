@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import com.backend.techstock.repository.changeName;
 import com.backend.techstock.repository.messageResponse;
 import com.backend.techstock.repository.users;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UsersController {
@@ -74,13 +76,11 @@ public class UsersController {
         messageResponse message;
 
         try {
-            usersModel.create(user);   
+            return new ResponseEntity<>(usersModel.create(user), HttpStatus.OK);   
         } catch (DuplicateKeyException e) {
             message = new messageResponse("Usuário já existe.");
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-        message = new messageResponse("Usuário criado com sucesso");
-        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PutMapping("/newpassword")
