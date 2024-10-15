@@ -21,23 +21,22 @@ public class SalesProductModel {
         return jdbcClient.sql("SELECT * FROM sales_product").query(salesProducts.class).list();
     }
 
-    public Integer insert(salesProducts saleProduct){
-        System.out.println(UsuarioLogado.globalVariable + "AAAAAAAAAAAAAAAAAAAAAAAAA");
+    public salesProducts insert(salesProducts saleProduct){
         jdbcClient.sql("UPDATE products SET modified_by = :user_id WHERE id = :id")
             .param("user_id", UsuarioLogado.globalVariable)
             .param("id", saleProduct.idProduct())
             .update();
 
-        int result = jdbcClient.sql("INSERT INTO sales_product(quantity, price, id_product, id_sales, modified_by)" +
-                               " VALUES (:quantity, :price, :id_product, :id_sales, :modified_by)")
+        salesProducts result = jdbcClient.sql("INSERT INTO sales_product(quantity, price, id_product, id_sales, modified_by)" +
+                               " VALUES (:quantity, :price, :id_product, :id_sales, :modified_by) RETURNING *")
                          .param("quantity", saleProduct.quantity())
                          .param("price", saleProduct.price())
                          .param("id_product", saleProduct.idProduct())
                          .param("id_sales", saleProduct.id_sales())
                          .param("modified_by", UsuarioLogado.globalVariable)
-                         .update();
+                         .query(salesProducts.class).single();
 
-        String sql = "SELECT sub_quantity_product(" + saleProduct.idProduct() + "," + saleProduct.quantity() + ");";
+            String sql = "SELECT sub_quantity_product(" + saleProduct.idProduct() + "," + saleProduct.quantity() + ");";
 
         try (
             Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/techstock", "postgres", "acesso");

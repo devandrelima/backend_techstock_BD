@@ -1,6 +1,7 @@
 package com.backend.techstock.controller;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -43,11 +44,12 @@ public class SalesProductsController {
     public ResponseEntity insertSaleProducts(@RequestBody salesProductsJson salesProducts) {
         SalesProductModel salesProductModel = new SalesProductModel(jdbcClient);
 
+        List<salesProducts> sales = new ArrayList<salesProducts>();
         for(int i = 0; i < salesProducts.products().size(); i++){
-            salesProductModel.insert(salesProducts.products().get(i));   
+            sales.add(salesProductModel.insert(salesProducts.products().get(i)));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return new ResponseEntity<>(sales, HttpStatus.OK);
     }
 
     @PutMapping()
